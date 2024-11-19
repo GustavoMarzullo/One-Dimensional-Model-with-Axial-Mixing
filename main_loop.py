@@ -66,7 +66,7 @@ Pin = 155 #atm
 ε = 0.4
 Ac = 7 #m²
 U = 5 #W/(m².K)
-d = 1 #m
+d = 2*np.sqrt(Ac/np.pi) #m
 ρb = 1816.5 #kg/m³
 
 Dea = 1e-4 #m²/s
@@ -80,7 +80,7 @@ us = v*ε #velocidade superficial do gás
 
 L0 = 0 #valor inicial de comprimento
 LF = 5 #valor final de comprimento
-N = 3 #número de espaços
+N = 10 #número de espaços
 h = (LF-L0)/N #step size
 
 A = (ε*Dea)/(h**2) - us/(2*h)
@@ -116,7 +116,7 @@ for iteration in range(1000):
     for i in range(1, N):
         _rN2 = rN2(CT[:,i], T[i], Pin)
         CN2_new[i] = (_rN2*ρb - A*CN2[i+1] - C*CN2[i-1])/B
-        T_new[i] = (-(-ΔHr)*_rN2*ρb +4*U/d*Tr - G*T[i+1] - I*T[i-1])/H
+        T_new[i] = (-_rN2*ρb*(-ΔHr) + 4*U/d*Tr - G*T[i+1] - I*T[i-1])/H
 
     #condições de contorno no final
     CN2_new[N] = (4*CN2[N-1] - CN2[N-2])/3

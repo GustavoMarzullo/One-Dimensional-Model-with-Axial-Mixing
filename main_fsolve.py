@@ -4,23 +4,23 @@ from Reator.conversao import rN2
 import matplotlib.pyplot as plt
 
 #vazão de entrada
-FT = 6000 #mol/s
+FT = 6500 #mol/s
 F0N2=0.21825*FT
 F0H2=0.65475*FT
 F0NH3=0.05*FT
 F0 =np.array([F0N2, F0H2, F0NH3])
-Q = 2.5 #m³/s
+Q = 2 #m³/s
 C0 = F0/Q
 C0N2, C0H2, C0NH3 = C0
 
-Tin = 360+273.15 #ºC
-Tr = 298.15 #ºC
+Tin = 380 + 273.15 #K
+Tr = 25 + 273.15 #K
 Pin = 155 #atm
 
 ε = 0.4
 Ac = 7 #m²
-U = 5 #W/(m².K)
-d = 1 #m
+U = 50 #W/(m².K)
+d = 2*np.sqrt(Ac/np.pi) #m
 ρb = 1816.5 #kg/m³
 
 Dea = 1e-4 #m²/s
@@ -52,8 +52,8 @@ K = (-2*λea)/(h)
 L =(λea)/(2*h)
 
 #estimativas iniciais
-CN2_est = np.linspace(C0N2, 0.75*C0N2, N + 1)
-T_est = np.linspace(Tin, Tin, N + 1)
+CN2_est = np.linspace(C0N2, 0.5*C0N2, N + 1)
+T_est = np.linspace(Tin, (Tin+Tr)/2, N + 1)
 estimativa = np.concatenate([CN2_est, T_est])
 
 
@@ -82,13 +82,13 @@ def fobj(vars):
     res[N] = 3*CN2[N] - 4*CN2[N-1] + CN2[N-2] #vazão molar
     res[2*N+1] = 3*T[N] - 4*T[N-1] + T[N-2]  #temperatura
 
-    """     #deixando tudo em escala
+        #deixando tudo em escala
     res[0] /= abs(C0N2)
     res[N+1] /= abs(Tin)
 
     for i in range(1, N):
         res[i] /= abs(C0N2)
-        res[N+1 + i] /= abs(Tin) """
+        res[N+1 + i] /= abs(Tin)
 
     return res
 
@@ -103,6 +103,6 @@ print("\n")
 print(f"C0N2 = {C0[0]:.1f} mol/m³")
 print("Concentração molar (mol/m³):", CN2.round(1))
 print("Conversão:", (100*(C0N2-CN2)/C0N2).round(1))
-print("Temperatura (ºC):", (T-273.15).round(0))
+print("Temperatura (ºC):", (T).round(0))
 print(f"\n Resíduo:{np.linalg.norm(fobj(resultado)):.3g}")
 print((CN2-CN2_est).round(1))
