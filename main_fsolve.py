@@ -4,7 +4,7 @@ from Reator.conversao import rN2
 import matplotlib.pyplot as plt
 
 #vazão de entrada
-FT = 6500 #mol/s
+FT = 100 #mol/s
 F0N2=0.21825*FT
 F0H2=0.65475*FT
 F0NH3=0.05*FT
@@ -18,8 +18,8 @@ Tr = 25 + 273.15 #K
 Pin = 155 #atm
 
 ε = 0.4
-Ac = 7 #m²
-U = 50 #W/(m².K)
+Ac = 1 #m²
+U = 5 #W/(m².K)
 d = 2*np.sqrt(Ac/np.pi) #m
 ρb = 1816.5 #kg/m³
 
@@ -53,7 +53,7 @@ L =(λea)/(2*h)
 
 #estimativas iniciais
 CN2_est = np.linspace(C0N2, 0.5*C0N2, N + 1)
-T_est = np.linspace(Tin, (Tin+Tr)/2, N + 1)
+T_est = np.linspace(Tin, Tin, N + 1)
 estimativa = np.concatenate([CN2_est, T_est])
 
 
@@ -74,7 +74,7 @@ def fobj(vars):
 
     #pontos de dentro
     for i in range(1, N):
-        _rN2 = -rN2(CT[:,i], T[i], Pin)
+        _rN2 = rN2(CT[:,i], T[i], Pin)
         res[i] =  A*CN2[i+1] + B*CN2[i] + C*CN2[i-1] - _rN2*ρb #vazão molar
         res[N+1+i] = G*T[i+1] + H*T[i] + I*T[i-1] + _rN2*ρb*(-ΔHr) + 4*U/d*Tr #temperatura
 
