@@ -1,4 +1,4 @@
-import math
+import matplotlib.pyplot as plt
 import numpy as np
 from Reator.conversao import rN2
 
@@ -50,12 +50,12 @@ def raρb(CT:np.array, T:float , P:float):
 
 
 #vazão de entrada
-FT = 6000 #mol/s
+FT = 100 #mol/s
 F0N2=0.21825*FT
 F0H2=0.65475*FT
 F0NH3=0.05*FT
 F0 =np.array([F0N2, F0H2, F0NH3])
-Q = 2.5 #m³/s
+Q = 2 #m³/s
 C0 = F0/Q
 C0N2, C0H2, C0NH3 = C0
 
@@ -67,7 +67,7 @@ Pin = 155 #atm
 Ac = 7 #m²
 U = 5 #W/(m².K)
 d = 2*np.sqrt(Ac/np.pi) #m
-ρb = 1816.5 #kg/m³
+ρb = 1 #kg/m³
 
 Dea = 1e-4 #m²/s
 λea = 4e-3 
@@ -114,7 +114,7 @@ for iteration in range(1000):
     T_new[0] = (ρG*us*Cp*Tin - K*T[1] - L*T[2])/J
     
     for i in range(1, N):
-        _rN2 = rN2(CT[:,i], T[i], Pin)
+        _rN2 = -rN2(CT[:,i], T[i], Pin)
         CN2_new[i] = (_rN2*ρb - A*CN2[i+1] - C*CN2[i-1])/B
         T_new[i] = (-_rN2*ρb*(-ΔHr) + 4*U/d*Tr - G*T[i+1] - I*T[i-1])/H
 
@@ -129,5 +129,15 @@ for iteration in range(1000):
     CN2 = CN2_new
     T = T_new
 
+# Plots pressure and temperature
+fig, ax = plt.subplots()
+ax.plot(L, P, color='black', linewidth=0.75)
+ax1 = ax.twinx()
+ax1.plot(L, T, color='red', linewidth=0.75)
+define_break_lines(ax, break_lines)
+ax.set_xlabel("Length (ft)")
+ax.set_ylabel("Pressure (psi)")
+ax1.set_ylabel("Temperature (°C)", color='red')
+ax1.tick_params(colors="red")
 print(CN2.round(0))
 print(T.round(0)-273)
