@@ -4,7 +4,7 @@ from Reator.conversao import rN2
 import matplotlib.pyplot as plt
 
 #vazão de entrada
-FT = 5000 #mol/s
+FT = 6500 #mol/s
 F0N2=0.21825*FT
 F0H2=0.65475*FT
 F0NH3=0.05*FT
@@ -22,8 +22,8 @@ d = 2*np.sqrt(Ac/np.pi) #m
 
 Dea = 1e-4 #m²/s
 λea = 4e-3 #m²/s
-Cp = 600 #J/(kg.K)
-ΔHr = -111e3 #J/mol_N2
+Cp = 5000 #J/(kg.K)
+ΔHr = -46e3 #J/mol_N2
 
 M = 9e-3 #kg/mol
 ρG = 23 #kg/m³
@@ -36,7 +36,7 @@ print(Q, v, us)
 
 L0 = 0 #valor inicial de comprimento
 LF = 10 #valor final de comprimento
-N = 21 #número de espaços
+N = 100 #número de espaços
 h = (LF-L0)/N #step size
 L_eval = np.linspace(L0, LF, N+1)
 
@@ -67,7 +67,7 @@ def fobj(vars):
     
     #condições de contorno em z=0
     res[0] = D*CN2[0] + E*CN2[1] + F*CN2[2] -us*C0N2 #vazão molar
-    res[N+1] = 0 #J*T[0] + K*T[1] + L*T[2] - ρG*us*Cp*Tin #temperatura
+    res[N+1] = J*T[0] + K*T[1] + L*T[2] - ρG*us*Cp*Tin #temperatura
 
     #pontos de dentro
     for i in range(1, N):
@@ -77,11 +77,11 @@ def fobj(vars):
         else:
             res[i]=  A*CN2[i+1] + B*CN2[i] + C*CN2[i-1] + A1*CN2[i-2] - _rN2*ρb #vazão molar
 
-        res[N+1+i] = 0 #G*T[i+1] + H*T[i] + I*T[i-1] + _rN2*ρb*(-ΔHr) + 4*U/d*Tr #temperatura
+        res[N+1+i] = G*T[i+1] + H*T[i] + I*T[i-1] + _rN2*ρb*(-ΔHr) + 4*U/d*Tr #temperatura
 
     #condições de contorno em z=L
     res[N] = (3*CN2[N] - 4*CN2[N-1] + CN2[N-2]) #vazão molar
-    res[2*N+1] = 0 #(3*T[N] - 4*T[N-1] + T[N-2])  #temperatura
+    res[2*N+1] = (3*T[N] - 4*T[N-1] + T[N-2])  #temperatura
 
      #deixando tudo em escala
     res[0] /= abs(C0N2)
@@ -99,7 +99,7 @@ T_est = np.linspace(Tin, Tin, N + 1)
 estimativa = np.concatenate([CN2_est, T_est])
 
 # resolvendo
-resultado = fsolve(fobj, estimativa)
+resultado = root(fobj, estimativa, method='hybr').x
 
 # printando
 CN2 = resultado[:N+1]
