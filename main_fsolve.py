@@ -16,7 +16,7 @@ Pin = 155 #atm
 
 ε = 0.4
 Ac = 7 #m²
-U = 50 #W/(m².K)
+U = 30 #W/(m².K)
 d = 2*np.sqrt(Ac/np.pi) #m
 ρb = 1 #kg/m³
 
@@ -35,7 +35,7 @@ us = v*ε #velocidade superficial do gás
 print(Q, v, us)
 
 L0 = 0 #valor inicial de comprimento
-LF = 10 #valor final de comprimento
+LF = 5 #valor final de comprimento
 N = 100 #número de espaços
 h = (LF-L0)/N #step size
 L_eval = np.linspace(L0, LF, N+1)
@@ -95,7 +95,7 @@ def fobj(vars):
 
 #estimativas iniciais
 CN2_est = np.linspace(1.0*C0N2, 0.75*C0N2, N + 1)
-T_est = np.linspace(Tin, Tin, N + 1)
+T_est = np.linspace(Tin, Tin+20, N + 1)
 estimativa = np.concatenate([CN2_est, T_est])
 
 # resolvendo
@@ -117,12 +117,12 @@ print((CN2-CN2_est).round(1))
 if residuo < 1e-3:
     # Plots pressure and temperature
     fig, ax = plt.subplots()
-    ax.plot(L_eval, CN2, color='black', linewidth=0.75)
+    ax.plot(L_eval, CN2, color='black', linewidth=0.8)
     ax1 = ax.twinx()
-    ax1.plot(L_eval, T-273.15, color='red', linewidth=0.75)
-    ax.set_xlabel("Length (m)")
-    ax.set_ylabel("Concentration (mol/m³)")
-    ax1.set_ylabel("Temperature (°C)", color='red')
+    ax1.plot(L_eval, T-273.15, color='red', linewidth=0.8)
+    ax.set_xlabel("Comprimento (m)")
+    ax.set_ylabel("Concentração (mol/m³)")
+    ax1.set_ylabel("Temperatura (°C)", color='red')
     ax1.tick_params(colors="red")
     print(CN2.round(0))
     print(T.round(0)-273)
